@@ -8,28 +8,26 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest  # GitHub එකේ Linux පරිගණකයක් ඉල්ලගන්නවා
+    runs-on: ubuntu-latest
 
     steps:
-      # 1. අපේ Code එක GitHub එකෙන් ගන්නවා
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 2. Docker Compose පාවිච්චි කරලා App එක Build කරනවා
+      # වෙනස් කළා: මැද ඉර අයින් කළා (docker compose build)
       - name: Build with Docker Compose
-        run: docker-compose build
+        run: docker compose build
 
-      # 3. App එක Start කරනවා (Background එකේ)
+      # වෙනස් කළා: මැද ඉර අයින් කළා (docker compose up -d)
       - name: Start Containers
-        run: docker-compose up -d
+        run: docker compose up -d
 
-      # 4. ඇත්තටම Backend එක වැඩද කියලා තත්පර 10ක් බලන් ඉඳලා Check කරනවා
       - name: Check Backend Status
         run: |
           sleep 10
           curl --fail http://localhost:5000 || exit 1
           echo "Backend is responding! ✅"
 
-      # 5. වැඩේ ඉවරයි, Containers නවත්වනවා
+      # වෙනස් කළා: මැද ඉර අයින් කළා (docker compose down)
       - name: Tear Down
-        run: docker-compose down
+        run: docker compose down
