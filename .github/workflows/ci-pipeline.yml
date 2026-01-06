@@ -1,0 +1,35 @@
+name: CI Pipeline - Docker Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest  # GitHub එකේ Linux පරිගණකයක් ඉල්ලගන්නවා
+
+    steps:
+      # 1. අපේ Code එක GitHub එකෙන් ගන්නවා
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. Docker Compose පාවිච්චි කරලා App එක Build කරනවා
+      - name: Build with Docker Compose
+        run: docker-compose build
+
+      # 3. App එක Start කරනවා (Background එකේ)
+      - name: Start Containers
+        run: docker-compose up -d
+
+      # 4. ඇත්තටම Backend එක වැඩද කියලා තත්පර 10ක් බලන් ඉඳලා Check කරනවා
+      - name: Check Backend Status
+        run: |
+          sleep 10
+          curl --fail http://localhost:5000 || exit 1
+          echo "Backend is responding! ✅"
+
+      # 5. වැඩේ ඉවරයි, Containers නවත්වනවා
+      - name: Tear Down
+        run: docker-compose down
